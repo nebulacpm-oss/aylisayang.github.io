@@ -1,0 +1,297 @@
+<!doctype html>
+
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>30 Days of Messages for Aylin 🤍</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg1:#ffd6e8;
+      --bg2:#ffeef7;
+      --pink:#ff8fb3;
+      --soft:#ffd9e6;
+      --card:#fff0f6;
+      --accent:#ff4d6d;
+      --text:#3b2a2a;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;font-family:'Poppins',system-ui,-apple-system,Segoe UI,Roboto;}
+    body{
+      background:linear-gradient(135deg,var(--bg1),var(--bg2));
+      display:flex;align-items:center;justify-content:center;padding:32px;color:var(--text);
+    }
+    .container{width:100%;max-width:1000px}header{ text-align:center;margin-bottom:18px }
+h1{font-size:clamp(20px,4vw,34px);margin:0 0 6px 0}
+p.lead{margin:0;color:#6b4953}
+
+.grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-top:18px}
+.day-btn{
+  background:linear-gradient(180deg,var(--soft),#fff);
+  border:2px solid rgba(255,255,255,0.6);
+  padding:14px 10px;border-radius:12px;font-weight:600;cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,0.06);
+  transition:transform .18s ease,box-shadow .18s ease;
+  text-align:center;
+}
+.day-btn:active{transform:translateY(2px) scale(.995)}
+
+/* Password modal */
+.overlay{position:fixed;inset:0;background:linear-gradient(180deg,rgba(255,240,246,0.95),rgba(255,250,250,0.9));display:flex;align-items:center;justify-content:center;z-index:9999}
+.pass-card{background:rgba(255,255,255,0.9);padding:26px;border-radius:16px;box-shadow:0 20px 40px rgba(0,0,0,0.12);width:92%;max-width:420px;text-align:center}
+.pass-card h2{margin:0 0 8px 0}
+.pass-card input{width:100%;padding:12px;border-radius:10px;border:1px solid #ffd7e4;margin-top:10px;font-size:16px}
+.pass-card button{margin-top:12px;padding:10px 14px;border-radius:10px;border:0;background:var(--accent);color:white;font-weight:700;cursor:pointer}
+.toast{color:#b0002a;margin-top:10px}
+
+/* Popup message */
+.msg-modal{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%) scale(.96);background:linear-gradient(180deg,white,#fff6fb);padding:26px;border-radius:18px;box-shadow:0 30px 70px rgba(98,34,62,0.18);z-index:9998;opacity:0;pointer-events:none;transition:opacity .35s ease,transform .35s cubic-bezier(.2,.9,.2,1)}
+.msg-modal.show{opacity:1;pointer-events:auto;transform:translate(-50%,-50%) scale(1)}
+.msg-modal h3{margin:0 0 8px 0;font-size:20px}
+.msg-text{font-size:16px;line-height:1.45;color:#5a414b}
+.close-btn{margin-top:14px;padding:8px 12px;border-radius:10px;border:0;background:transparent;color:var(--accent);font-weight:700;cursor:pointer}
+
+/* heart particles */
+.particle{position:fixed;pointer-events:none;width:18px;height:18px;font-size:18px;transform-origin:center;z-index:9997}
+.heart{width:18px;height:18px;display:inline-block;transform:rotate(-45deg);}
+.heart:before,.heart:after{content:'';position:absolute;width:12px;height:18px;border-radius:12px;background:var(--accent)}
+
+/* small helper */
+.center-note{margin-top:12px;color:#7a5562;font-size:13px}
+
+@media(max-width:720px){
+  .grid{grid-template-columns:repeat(3,1fr)}
+}
+
+/* subtle appear animation for cards */
+.day-btn{animation:fadeIn .6s ease both}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px) scale(.995)}to{opacity:1;transform:none}}
+
+  </style>
+</head>
+<body>
+  <div class="container" id="app">
+    <header>
+      <h1>30 Days of Messages for Aylin 🤍</h1>
+      <p class="lead">Buka satu pesan per hari ya, sayang ✨</p>
+    </header><main>
+  <div class="grid" id="grid"></div>
+  <p class="center-note">Sehari sekali, kalo lebih bintitan</p>
+</main>
+
+  </div>  <!-- Password overlay -->  <div class="overlay" id="passOverlay">
+    <div class="pass-card">
+      <h2>Masukkan password sayang</h2>
+      <div>Tanya ke mas bima passwordnya </div>
+      <input id="pwInput" type="password" placeholder="Ketik passwordnya sayang..." autocomplete="off" />
+      <button id="pwBtn">Buka</button>
+      <div class="toast" id="pwToast"></div>
+    </div>
+  </div>  <!-- Message modal -->  <div class="msg-modal" id="msgModal" aria-hidden="true">
+    <h3 id="msgTitle">Pesan</h3>
+    <div class="msg-text" id="msgText"></div>
+    <button class="close-btn" id="closeMsg">Tutup</button>
+  </div>  <script>
+    // messages array (exact text provided)
+    const messages = [
+      "Setiap aku bangun pagi, nama yang pertama kali muncul di pikiranku selalu kamu, Aylin.",
+      "Hatiku memilihmu tanpa perlu alasan.",
+      "Cintaku selalu menemukan jalan menuju kamu.",
+      "Kalau aku bisa, aku tidak akan pernah melepaskan pelukan untukmu.",
+      "Kamu membuatku merasa pulang meski kita jauh.",
+      "Kamu adalah tempat aku ingin kembali.",
+      "Setiap kamu bilang 'jaga diri', hati aku ikut hangat.",
+      "Rinduku tulus, dan semuanya untukmu.",
+      "Jika rindu punya suara, ia akan memanggil 'Aylin'.",
+      "Aku iri pada layarmu yang bisa melihatmu setiap hari.",
+      "Aku mencintaimu dengan tenang, tapi dalam.",
+      "Pesanmu bagai pelukan yang belum sempat kauberikan.",
+      "Kalau jarak ini ujian, kamu adalah hadiahnya.",
+      "Aku ingin mencintaimu dari dekat suatu hari nanti.",
+      "Rinduku lembut, tapi intens.",
+      "Hatiku tidak pernah ragu memilihmu.",
+      "Aku ingin jadi tempatmu pulang.",
+      "Jika kamu rindu aku… rinduku dua kali lipat.",
+      "Aylin jauh dari pandangan, dekat dari hati.",
+      "Semoga kamu selalu tersenyum untukku.",
+      "Kamu adalah cahaya dalam cintaku.",
+      "Hal terbaik bulan ini adalah kamu.",
+      "Tidak sempurna, tapi sempurna untukku.",
+      "Andai aku bisa, aku ada di sampingmu sekarang.",
+      "Aku cinta kamu sekarang dan nanti.",
+      "Suaramu adalah hal yang ingin aku dengar setiap hari.",
+      "Rasa sayangku menyala untukmu.",
+      "Aku ingin membuat memori baru tanpa jarak.",
+      "Cintaku besar karena kamu.",
+      "Kamu rumahku, masa depanku, satu-satunya yang aku mau, Aylin."
+    ];
+
+    // create buttons using document.createElement
+    const grid = document.getElementById('grid');
+    messages.forEach((msg, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'day-btn';
+      btn.setAttribute('data-index', i);
+      btn.innerText = 'Day ' + (i+1);
+      btn.addEventListener('click', () => handleDayClick(i));
+      grid.appendChild(btn);
+    });
+
+    // password logic
+    const overlay = document.getElementById('passOverlay');
+    const pwInput = document.getElementById('pwInput');
+    const pwBtn = document.getElementById('pwBtn');
+    const pwToast = document.getElementById('pwToast');
+
+    const CORRECT = 'AYLIN'; // as requested
+
+    function showToast(text){
+      pwToast.innerText = text;
+      setTimeout(()=>{ pwToast.innerText = ''; }, 3200);
+    }
+
+    pwBtn.addEventListener('click', tryPw);
+    pwInput.addEventListener('keydown', (e)=>{ if(e.key === 'Enter') tryPw(); });
+
+    function tryPw(){
+      const val = pwInput.value.trim();
+      if(val === CORRECT){
+        overlay.style.display = 'none';
+        document.body.style.overflow = '';
+      } else {
+        showToast('Passwordnya salah sayang. Coba diliat lagi.');
+        pwInput.value = '';
+        pwInput.focus();
+      }
+    }
+
+    // Show overlay on load (it is visible by default). Focus input.
+    window.addEventListener('load', ()=>{ pwInput.focus(); });
+
+    // message modal
+    const modal = document.getElementById('msgModal');
+    const msgText = document.getElementById('msgText');
+    const msgTitle = document.getElementById('msgTitle');
+    const closeMsg = document.getElementById('closeMsg');
+
+    let currentTimeout = null;
+    function handleDayClick(index){
+      // Disable clicking while waiting
+      if(currentTimeout) return; // prevent double clicks
+
+      // show small loading hint
+      msgTitle.innerText = 'Membuka pesan dari mas bima...';
+      msgText.innerHTML = '<em>Sabar sebentar sayang ✨</em>';
+      showModal();
+
+      // wait 2.5s then show actual message and particles
+      currentTimeout = setTimeout(()=>{
+        msgTitle.innerText = 'Day ' + (index+1);
+        msgText.innerText = messages[index];
+        spawnHearts();
+        currentTimeout = null;
+      }, 2500);
+    }
+
+    function showModal(){
+      modal.classList.add('show');
+      modal.setAttribute('aria-hidden','false');
+    }
+    function hideModal(){
+      modal.classList.remove('show');
+      modal.setAttribute('aria-hidden','true');
+      if(currentTimeout){ clearTimeout(currentTimeout); currentTimeout = null; }
+    }
+    closeMsg.addEventListener('click', hideModal);
+
+    // hearts effect: spawn 10-15 particles
+    function spawnHearts(){
+      const count = Math.floor(Math.random() * 6) + 10; // 10-15
+      for(let i=0;i<count;i++){
+        createHeartParticle();
+      }
+    }
+
+    function createHeartParticle(){
+      const p = document.createElement('div');
+      p.className = 'particle';
+      // random start position near center
+      const startX = window.innerWidth/2 + (Math.random()*200 - 100);
+      const startY = window.innerHeight/2 + (Math.random()*120 - 60);
+      p.style.left = startX + 'px';
+      p.style.top = startY + 'px';
+
+      // heart shape via inner element
+      const heart = document.createElement('div');
+      heart.className = 'heart';
+      heart.style.position = 'absolute';
+      heart.style.left = '0';
+      heart.style.top = '0';
+      heart.style.width = '18px';
+      heart.style.height = '18px';
+      heart.style.transform = 'rotate(-45deg)';
+
+      // create two rounded parts
+      const left = document.createElement('span');
+      left.style.position = 'absolute';
+      left.style.width = '12px';
+      left.style.height = '12px';
+      left.style.borderRadius = '12px 12px 0 0';
+      left.style.background = 'var(--accent)';
+      left.style.left = '0';
+      left.style.top = '0';
+
+      const right = left.cloneNode();
+      right.style.left = '6px';
+
+      const bottom = document.createElement('span');
+      bottom.style.position = 'absolute';
+      bottom.style.width = '18px';
+      bottom.style.height = '18px';
+      bottom.style.background = 'var(--accent)';
+      bottom.style.left = '0';
+      bottom.style.top = '6px';
+      bottom.style.borderRadius = '0 0 8px 8px';
+
+      heart.appendChild(left);
+      heart.appendChild(right);
+      heart.appendChild(bottom);
+      p.appendChild(heart);
+      document.body.appendChild(p);
+
+      // random trajectory and duration
+      const angle = Math.random() * Math.PI - Math.PI/2; // up-ish
+      const distance = 120 + Math.random()*140;
+      const destX = startX + Math.cos(angle) * distance;
+      const destY = startY - (80 + Math.random()*200);
+      const duration = 900 + Math.random()*700; // ms
+
+      // initial style
+      p.style.opacity = '0';
+      p.style.transform = 'translateY(0) scale(0.8)';
+
+      // animate using requestAnimationFrame over duration
+      const start = performance.now();
+      function anim(now){
+        const t = Math.min(1, (now - start)/duration);
+        // ease out cubic
+        const ease = (--t)*t*t+1;
+        p.style.left = (startX + (destX-startX) * ease) + 'px';
+        p.style.top = (startY + (destY-startY) * ease) + 'px';
+        p.style.opacity = String(1 - ease);
+        p.style.transform = 'scale(' + (0.8 + 0.6*ease) + ') rotate(' + (Math.random()*30-15) + 'deg)';
+        if(now - start < duration) requestAnimationFrame(anim);
+        else { p.remove(); }
+      }
+      // slight delay to stagger
+      setTimeout(()=>{ requestAnimationFrame(anim); }, Math.random()*80);
+    }
+
+    // small accessibility: close modal on Escape
+    document.addEventListener('keydown', (e)=>{
+      if(e.key === 'Escape'){
+        hideModal();
+      }
+    });
+  </script></body>
+    </html>
