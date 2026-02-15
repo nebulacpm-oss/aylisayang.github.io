@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>15 Februari - Bima</title>
+
+<style>
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background: #0f2027;
+  color: #eaeaea;
+  overflow: hidden;
+}
+
+/* Splash Screen */
+#splash {
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  z-index: 9999;
+  animation: fadeOut 1s ease forwards;
+  animation-delay: 2.5s;
+}
+
+#splash h1 {
+  font-size: 48px;
+  letter-spacing: 4px;
+  color: #7dd3fc;
+  animation: pulse 1.5s infinite;
+}
+
+#splash p {
+  color: #ccc;
+  font-size: 14px;
+}
+
+@keyframes pulse {
+  0% { opacity: .3; }
+  50% { opacity: 1; }
+  100% { opacity: .3; }
+}
+
+@keyframes fadeOut {
+  to { opacity: 0; visibility: hidden; }
+}
+
+/* Content */
+#content {
+  opacity: 0;
+  animation: show 1s ease forwards;
+  animation-delay: 3s;
+  padding: 60px 20px;
+}
+
+@keyframes show {
+  to { opacity: 1; }
+}
+
+.container {
+  max-width: 800px;
+  margin: auto;
+  background: rgba(0,0,0,.6);
+  padding: 35px;
+  border-radius: 15px;
+  box-shadow: 0 0 25px rgba(0,0,0,.7);
+  backdrop-filter: blur(6px);
+}
+
+h2 {
+  text-align: center;
+  color: #7dd3fc;
+  letter-spacing: 2px;
+}
+
+p {
+  line-height: 1.9;
+  font-size: 16px;
+}
+
+.quote {
+  background: rgba(125,211,252,.1);
+  padding: 18px;
+  border-left: 5px solid #7dd3fc;
+  margin: 25px 0;
+  font-style: italic;
+}
+
+footer {
+  text-align: center;
+  margin-top: 40px;
+  color: #9ca3af;
+  font-size: 14px;
+  border-top: 1px solid rgba(255,255,255,.1);
+  padding-top: 20px;
+}
+</style>
+</head>
+
+<body>
+
+<!-- Splash -->
+<div id="splash">
+  <h1>BIMA</h1>
+  <p>15 Februari</p>
+</div>
+
+<!-- Main -->
+<div id="content">
+  <div class="container">
+
+    <h2>15 Februari</h2>
+
+    <p>
+      Ini cerita tentang gue yang lagi PDKT sama seseorang.
+      Awalnya biasa aja, sampai akhirnya dia yang mulai duluan ngechat gue.
+    </p>
+
+    <p>
+      Kadang dia perhatian, kadang cuek.
+      Kadang bikin yakin, kadang bikin ragu.
+    </p>
+
+    <div class="quote">
+      “Dia datang duluan, tapi gue yang kebanyakan mikir.”
+    </div>
+
+    <p>
+      Gue nggak mau kegeeran,
+      tapi juga nggak bisa pura-pura nggak peduli.
+    </p>
+
+    <p>
+      Sekarang gue jalanin aja.
+      Biar waktu yang jelasin semuanya.
+    </p>
+
+    <footer>
+      Penulis: <b>Bima</b><br>
+      15 Februari 2026
+    </footer>
+
+  </div>
+</div>
+
+</body>
+</html>
