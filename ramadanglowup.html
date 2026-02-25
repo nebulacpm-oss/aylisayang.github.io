@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RAMADAN GLOW UP – GOD MODE</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+:root{
+--neon:#00ffaa;
+--neon2:#00aaff;
+--bg:#0c0c0c;
+--card:rgba(255,255,255,.05);
+}
+*{box-sizing:border-box}
+body{
+margin:0;
+font-family:'Poppins',sans-serif;
+background:linear-gradient(135deg,#080808,#141414);
+color:#fff;
+padding:20px;
+}
+h1{
+text-align:center;
+font-weight:900;
+letter-spacing:3px;
+background:linear-gradient(90deg,var(--neon),var(--neon2));
+-webkit-background-clip:text;
+-webkit-text-fill-color:transparent;
+}
+.topbar{
+display:flex;
+justify-content:space-between;
+align-items:center;
+flex-wrap:wrap;
+margin-bottom:20px;
+}
+.clock{font-weight:600;color:var(--neon)}
+.day{
+background:var(--card);
+padding:15px;
+border-radius:15px;
+margin-bottom:20px;
+box-shadow:0 0 15px rgba(0,255,200,.08);
+}
+.day h2{color:var(--neon);margin:0 0 10px 0}
+td{padding:8px;font-size:14px}
+.task{cursor:pointer}
+.task:hover{color:var(--neon)}
+input[type="checkbox"]{
+transform:scale(1.2);
+accent-color:var(--neon);
+cursor:pointer;
+}
+.progress-bar{
+width:100%;height:18px;background:#222;border-radius:20px;overflow:hidden;margin-top:20px;
+}
+.progress{
+height:100%;width:0%;
+background:linear-gradient(90deg,var(--neon),var(--neon2));
+transition:.3s;
+}
+.dashboard{
+margin-top:30px;
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:20px;
+}
+.card{
+background:var(--card);
+padding:20px;
+border-radius:15px;
+}
+button{
+padding:8px 15px;
+border:none;
+border-radius:20px;
+background:linear-gradient(90deg,var(--neon),var(--neon2));
+cursor:pointer;
+font-weight:700;
+}
+.modal{
+display:none;
+position:fixed;
+top:0;left:0;width:100%;height:100%;
+background:rgba(0,0,0,.7);
+justify-content:center;
+align-items:center;
+}
+.modal-content{
+background:#111;padding:25px;border-radius:15px;
+max-width:400px;width:90%;
+animation:pop .3s ease;
+}
+@keyframes pop{from{transform:scale(.7);opacity:0}to{transform:scale(1);opacity:1}}
+@media(max-width:768px){
+.dashboard{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<h1>RAMADAN GLOW UP – GOD MODE 🔥</h1>
+
+<div class="topbar">
+<div class="clock" id="clock"></div>
+<div>
+<button onclick="resetAll()">Reset</button>
+<button onclick="toggleSound()">Sound</button>
+</div>
+</div>
+
+<div id="schedule"></div>
+
+<div class="progress-bar">
+<div class="progress" id="progressBar"></div>
+</div>
+<p id="progressText">0%</p>
+
+<div class="dashboard">
+<div class="card">
+<h3>Weekly Completion</h3>
+<canvas id="weeklyChart"></canvas>
+</div>
+<div class="card">
+<h3>Weight Tracker</h3>
+<input type="number" id="weightInput" placeholder="Masukkan berat (kg)">
+<button onclick="addWeight()">Tambah</button>
+<canvas id="weightChart"></canvas>
+</div>
+</div>
+
+<div class="modal" id="modal">
+<div class="modal-content">
+<h3 id="modalTitle"></h3>
+<p id="modalBody"></p>
+<button onclick="closeModal()">Tutup</button>
+</div>
+</div>
+
+<audio id="clickSound">
+<source src="https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg">
+</audio>
+
+<script>
+const days={
+"Senin":["Gerak ringan","Skipping","Buka terkontrol","Sahur protein cukup"],
+"Selasa":["Gerak ringan","Latihan otot","Buka terkontrol","Sahur protein cukup"],
+"Rabu":["Gerak ringan","Skipping","Buka terkontrol","Sahur protein cukup"],
+"Kamis":["Gerak ringan","Stretching","Buka terkontrol","Sahur protein cukup"],
+"Jumat":["Gerak ringan","Skipping","Buka terkontrol","Sahur protein cukup"],
+"Sabtu":["Gerak ringan","Latihan otot","Buka terkontrol","Sahur protein cukup"],
+"Minggu":["Evaluasi","Kontrol makan","Hidrasi","Mental reset"]
+};
+
+const details={
+"Gerak ringan":"• Stretch bahu\n• Putar leher\n• 10 squat ringan\n• Jangan rebahan",
+"Skipping":"• 30 detik lompat\n• 30 detik rest\n• 8-10 set",
+"Latihan otot":"• Incline push up\n• Squat\n• Plank\n• Wrist curl",
+"Buka terkontrol":"• 2-3 kurma\n• Air putih\n• Protein\n• Sayur",
+"Sahur protein cukup":"• 2 telur / ayam\n• Nasi 1 centong\n• 2-3 gelas air",
+"Stretching":"• Stretch kaki\n• Deep breathing",
+"Evaluasi":"• Cek progres\n• Timbang berat",
+"Kontrol makan":"• Stop minuman manis",
+"Hidrasi":"• 8 gelas total",
+"Mental reset":"• Ingat tujuan"
+};
+
+const container=document.getElementById("schedule");
+let total=0;
+
+Object.keys(days).forEach(day=>{
+const div=document.createElement("div");
+div.className="day";
+div.innerHTML=`<h2>${day}</h2>`;
+const table=document.createElement("table");
+days[day].forEach((task,i)=>{
+total++;
+const id=day+"-"+i;
+const checked=localStorage.getItem(id)==="true";
+const row=document.createElement("tr");
+row.innerHTML=`
+<td><input type="checkbox" id="${id}" ${checked?"checked":""}></td>
+<td class="task" onclick="showDetail('${task}')">${task}</td>`;
+table.appendChild(row);
+});
+div.appendChild(table);
+container.appendChild(div);
+});
+
+document.querySelectorAll("input[type='checkbox']").forEach(cb=>{
+cb.addEventListener("change",()=>{
+localStorage.setItem(cb.id,cb.checked);
+document.getElementById("clickSound").play();
+updateProgress();
+});
+});
+
+function updateProgress(){
+let checked=0;
+document.querySelectorAll("input[type='checkbox']").forEach(cb=>{
+if(cb.checked) checked++;
+});
+const percent=Math.round((checked/total)*100);
+document.getElementById("progressBar").style.width=percent+"%";
+document.getElementById("progressText").innerText=percent+"%";
+weeklyChart.data.datasets[0].data=[percent];
+weeklyChart.update();
+if(percent===100) confetti();
+}
+
+function showDetail(task){
+document.getElementById("modalTitle").innerText=task;
+document.getElementById("modalBody").innerText=details[task];
+document.getElementById("modal").style.display="flex";
+}
+
+function closeModal(){
+document.getElementById("modal").style.display="none";
+}
+
+function resetAll(){
+if(confirm("Reset semua progress?")){
+localStorage.clear();
+location.reload();
+}
+}
+
+function toggleSound(){
+const audio=document.getElementById("clickSound");
+audio.muted=!audio.muted;
+}
+
+function confetti(){
+for(let i=0;i<50;i++){
+const div=document.createElement("div");
+div.style.position="fixed";
+div.style.width="5px";
+div.style.height="5px";
+div.style.background="lime";
+div.style.top=Math.random()*100+"%";
+div.style.left=Math.random()*100+"%";
+div.style.zIndex=9999;
+document.body.appendChild(div);
+setTimeout(()=>div.remove(),1000);
+}
+}
+
+setInterval(()=>{
+document.getElementById("clock").innerText=new Date().toLocaleTimeString();
+},1000);
+
+const weeklyChart=new Chart(document.getElementById("weeklyChart"),{
+type:'doughnut',
+data:{labels:['Progress','Remaining'],
+datasets:[{data:[0,100],backgroundColor:['#00ffaa','#222']}]},
+options:{plugins:{legend:{display:false}}}
+});
+
+let weightData=JSON.parse(localStorage.getItem("weightData")||"[]");
+
+const weightChart=new Chart(document.getElementById("weightChart"),{
+type:'line',
+data:{labels:weightData.map((_,i)=>i+1),
+datasets:[{data:weightData,borderColor:'#00ffaa',fill:false}]},
+options:{plugins:{legend:{display:false}}}
+});
+
+function addWeight(){
+const val=parseFloat(document.getElementById("weightInput").value);
+if(!val) return;
+weightData.push(val);
+localStorage.setItem("weightData",JSON.stringify(weightData));
+weightChart.data.labels=weightData.map((_,i)=>i+1);
+weightChart.data.datasets[0].data=weightData;
+weightChart.update();
+document.getElementById("weightInput").value="";
+}
+
+updateProgress();
+</script>
+
+</body>
+  </html>
